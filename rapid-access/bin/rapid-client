@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+import sys
+import os
+import logging
+
+from rapidaccess import restore_factory, start_forward
+
+if os.geteuid() != 0:
+    sys.stderr.write("Please run as root\n")
+    exit(1)
+
+logging.basicConfig(filename='/var/log/rapidaccess.log', level=logging.INFO)
+
+try:
+    start_forward('/dev/'+sys.argv[1])
+except OSError as e:
+    logging.warning("Terminated on hardware disconnect <%s>" % str(e))
+except Exception as e:
+    logging.error("Exception occurred - Process terminated", exc_info=True)
+    sys.stderr.write("RapidAccess client terminated due to unexpected error, check log for details\n")
