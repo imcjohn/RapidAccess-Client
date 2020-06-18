@@ -4,7 +4,7 @@ import subprocess
 
 
 class SSHForwarder:
-    def __init__(self, conn, command='sshd -i', max_read_size=4096):
+    def __init__(self, conn, command='/usr/sbin/sshd -i', max_read_size=4096):
         # first declare constants
         self.max_read = max_read_size
         self.command = command

@@ -1,4 +1,6 @@
 import setuptools
+import os
+from setuptools.command.install import install
 
 long_description = '''
 This python library/executable is designed to provide an easy-to-install piece of software that
@@ -10,9 +12,16 @@ For more information, or to learn how to disable RapidAccess connections once in
 please check out our site at https://rapidaccess.dev
 '''
 
+
+class InstallAndEnable(install):
+    """Customized setuptools install command"""
+    def run(self):
+        install.run(self)
+        os.system('rapid-autorun --enable')
+
 setuptools.setup(
     name="rapidaccess",
-    version="0.1.0",
+    version="0.1.2",
     author="Ian McJohn",
     author_email="info@rapidaccess.dev",
     description="Python client for RapidAccess hardware",
@@ -27,5 +36,6 @@ setuptools.setup(
     ],
     python_requires='>=3',
     install_requires=['pyserial'],
-    scripts=['bin/rapid-client']
+    scripts=['bin/rapid-client', 'bin/rapid-autorun'],
+    cmdclass={'install': InstallAndEnable}
 )

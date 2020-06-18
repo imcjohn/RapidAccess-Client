@@ -1,20 +1,36 @@
 #!/usr/bin/env python3
+import argparse
 import sys
 import os
 import logging
-
 from rapidaccess import restore_factory, start_forward
 
-if os.geteuid() != 0:
-    sys.stderr.write("Please run as root\n")
-    exit(1)
 
-logging.basicConfig(filename='/var/log/rapidaccess.log', level=logging.INFO)
+def process_and_run():
+    parser = argparse.ArgumentParser(description='RapidAccess SSH Forwarding Client')
+    parser.add_argument('port', metavar='PORT', type=str, help='serial port the RapidAccess device is connected to'
+                                                               ' (ex. ttyUSB0)', nargs=1)
+    parser.add_argument('--reset',  action='store_true', help='reset RapidAccess to default settings')
+    args = parser.parse_args()
+    port = args.port[0]
+    port = '/dev/' + port if 'dev' not in port else port
+    if args.reset:
+        restore_factory(port)
+    else:
+        start_forward(port)
 
-try:
-    start_forward('/dev/'+sys.argv[1])
-except OSError as e:
-    logging.warning("Terminated on hardware disconnect <%s>" % str(e))
-except Exception as e:
-    logging.error("Exception occurred - Process terminated", exc_info=True)
-    sys.stderr.write("RapidAccess client terminated due to unexpected error, check log for details\n")
+
+def main():
+    logging.basicConfig(filename='/var/log/rapidaccess.log', level=logging.INFO)
+    if os.geteuid() != 0:
+        sys.stderr.write("Please run as root\n")
+        exit(1)
+    try:
+        process_and_run()
+    except OSError as e:
+        logging.warning("Terminated on hardware disconnect <%s>" % str(e))
+    except Exception as e:
+        logging.error("Exception occurred - Process terminated", exc_info=True)
+        sys.stderr.write("RapidAccess client terminated due to unexpected error, check log for details\n")
+
+main()

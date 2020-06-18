@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+import argparse
+import os
+
+
+def configure_autorun(enabled):
+    rules_path = '/etc/udev/rules.d/99-rapid.rules'
+    if enabled:
+        f = open(rules_path,'w')
+        f.write('SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", RUN+="/usr/local/bin/rapid-client %k"\n')
+        f.close()
+        print('Autorun enabled. Your RapidAccess dongle will be detected upon plug-in.')
+    else:
+        os.remove(rules_path)
+        print('Autorun disabled. RapidAccess will only run when specifically called.')
+    ret = os.system('/etc/init.d/udev restart')
+    if ret != 0:
+        print('Failed to restart udev. You must reboot in order for your new settings to take hold')
+        exit(1)
+
+
+parser = argparse.ArgumentParser(description='RapidAccess auto-run utility')
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument('--enable', action='store_true', help='enable autorun when RapidAccess is plugged in')
+group.add_argument('--disable', action='store_true', help='disable autorun when RapidAccess is plugged in')
+args = parser.parse_args()
+if args.enable:
+    configure_autorun(True)
+elif args.disable:
+    configure_autorun(False)
