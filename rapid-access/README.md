@@ -19,8 +19,8 @@ You can easily build/install this with a simple pip command from the repository 
 
 `sudo pip3 install -e rapid-access rapidaccess`
 
-This will build the package, install the rapidaccess module, and place the binaries rapid-client and rapid-autorun in your path. For more information on these, check out our documentation at https://docs.rapidaccess.dev. In addition, this will make rapid-client autorun when a RapidAccess device is plugged in. If you do not want this behavior, simply run
+This will build the package, install the rapidaccess module, and place the binaries rapid-client and rapid-autorun in your path. For more information on these, check out our documentation at https://docs.rapidaccess.dev. In addition, this will make rapid-client autorun when a RapidAccess device is plugged in. If you do not want this behavior, simply run the below command in your terminal.
 
-`sudo rapid-client --disable` in your terminal
+`sudo rapid-client --disable`
 
 NOTE: This will install pyserial as part of the build process
