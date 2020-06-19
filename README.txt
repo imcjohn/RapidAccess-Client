@@ -1,1 +1,0 @@
-This is the working repository for the python client for my RapidAccess dongle, more details coming soon
