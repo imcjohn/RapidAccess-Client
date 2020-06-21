@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+    input[type=text], select {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    input[type=button] {
+      width: 80%;
+      background-color: #4CAF50;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    input[type=submit]:hover {
+      background-color: #45a049;
+    }
+
+    .menu ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #3A3D30;
+    }
+
+    .menu li {
+      float: left;
+      border-right:1px solid #669CCB;
+    }
+
+    .menu li:last-child {
+      border-right: none;
+    }
+
+    .menu li a {
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+    }
+
+    .menu li a:hover:not(.active) {
+      background-color: #5277DD;
+    }
+
+    .active {
+      background-color: #4CAF50;
+    }
+
+    .status-box{
+      display: block;
+      margin: auto;
+      background-color: #A2BCAC;
+      text-align: left;
+      padding: 14px 16px;
+      text-decoration: none;
+      border-width: 2px;
+    }
+
+    body{
+      background-color: #5C6E55
+    }
+
+    .status-box li{
+      margin: 0 0 7px 0;
+    }
+    </style>
+    <script>
+        conf = {wifipass: "password", wifiname: "espboi", hostname: "rapidlad", adminpass: "password", mode: 'acc'};
+        function menu(x){
+            let tabs = ['status', 'network', 'security'];
+            tabs.forEach(function(x){
+                document.getElementById(x).style.display = 'none';
+                document.getElementById(x+'-link').classList.remove("active");
+            });
+            document.getElementById(x).style.display = '';
+            document.getElementById(x+'-link').classList.add("active");
+        }
+
+        window.onload = function(){
+            menu('status');
+            for (let id in conf){
+                if (id != 'mode')
+                    document.getElementById(id).value = conf[id];
+            }
+            if (conf.mode === 'acc'){
+                document.getElementById('wifitype').selectedIndex = 1;
+            }
+            else{
+                document.getElementById('wifitype').selectedIndex = 0;
+            }
+        };
+    </script>
+</head>
+<body>
+
+<div class="menu">
+  <ul>
+    <li><a class="active" id="status-link" onclick="menu('status');">Status</a></li>
+    <li><a id="network-link" onclick="menu('network');">Network</a></li>
+    <li><a id="security-link" onclick="menu('security');">Security</a></li>
+    <li style="float:right"><a href="#about">RapidAccess Control Panel</a></li>
+  </ul>
+</div>
+<br>
+<div id="status" class="status-box" style="height:200px; width:300px">
+  <b>Network Status</b>
+  <hr color="black">
+  <ul>
+  <li>Device IP:</li>
+  <li>Wireless Mode:</li>
+  <li>USB Connection:</li>
+  <li>Wireless Client:</li>
+  </ul>
+</div>
+
+<div id="network" class="status-box" style="height:400px; width:300px">
+    <b>Wireless Network Configuration</b>
+    <hr color="black">
+    <form action="/networkUpdate" method="get">
+        <label for="wifitype">Wireless Mode</label>
+        <select id="wifitype" name="wifitype">
+          <option value="sta">Station (connect to existing network)</option>
+          <option value="acc">AP (broadcast own network)</option>
+        </select>
+        <label for="wifiname">Wireless Network Name:</label><br>
+        <input type="text" id="wifiname" name="wifiname"><br>
+        <label for="wifipass">Wireless Network Key:</label><br>
+        <input type="text" id="wifipass" name="wifipass"><br>
+        <label for="hostname">mDns Hostname:</label><br>
+        <input type="text" id="hostname" name="hostname"><br>
+        <input type="submit" value="Update Network">
+    </form>
+</div>
+
+<div id="security" class="status-box" style="height:250px; width:250px">
+  <b>Security/Login Configuration</b>
+  <hr color="black">
+  <form action="/networkUpdate" method="get">
+    <label for="username">Admin Panel Username:</label><br>
+    <input type="text" id="username" name="username" value="admin" disabled="true"><br>
+    <label for="adminpass">Admin Panel Password:</label><br>
+    <input type="text" id="adminpass" name="adminpass"><br>
+    <input type="submit" value="Update Settings">
+  </form>
+</div>
+</body>
+</html>

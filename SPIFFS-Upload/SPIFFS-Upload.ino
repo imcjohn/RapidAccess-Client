@@ -1,0 +1,29 @@
+#include "FS.h"
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  bool result = SPIFFS.begin();
+  while (!Serial.available()){}
+  Serial.println("SPIFFS opened: " + result);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  if (Serial.available()){
+    Serial.read();
+    Serial.println("current index----");
+    File f = SPIFFS.open("/index.html","r");
+    while(f.available()) 
+    {
+      //read line by line from the file
+      char ch = f.read();
+      Serial.write(ch);
+    }
+    f.close();
+    Serial.println("----- writing new index ---");
+    f = SPIFFS.open("/index.html","w");
+f.print("<!DOCTYPE html>\n<html>\n<head>\n    <style>\n    input[type=text], select {\n      width: 100%;\n      padding: 12px 20px;\n      margin: 8px 0;\n      display: inline-block;\n      border: 1px solid #ccc;\n      border-radius: 4px;\n      box-sizing: border-box;\n    }\n\n    input[type=submit] {\n      width: 80%;\n      background-color: #4CAF50;\n      color: white;\n      padding: 14px 20px;\n      margin: 8px 0;\n      border: none;\n      border-radius: 4px;\n      cursor: pointer;\n    }\n\n    input[type=submit]:hover {\n      background-color: #45a049;\n    }\n\n    .menu ul {\n      list-style-type: none;\n      margin: 0;\n      padding: 0;\n      overflow: hidden;\n      background-color: #3A3D30;\n    }\n\n    .menu li {\n      float: left;\n      border-right:1px solid #669CCB;\n    }\n\n    .menu li:last-child {\n      border-right: none;\n    }\n\n    .menu li a {\n      display: block;\n      color: white;\n      text-align: center;\n      padding: 14px 16px;\n      text-decoration: none;\n    }\n\n    .menu li a:hover:not(.active) {\n      background-color: #5277DD;\n    }\n\n    .active {\n      background-color: #4CAF50;\n    }\n\n    .status-box{\n      display: block;\n      margin: auto;\n      background-color: #A2BCAC;\n      text-align: left;\n      padding: 14px 16px;\n      text-decoration: none;\n      border-width: 2px;\n    }\n\n    body{\n      background-color: #5C6E55\n    }\n\n    .status-box li{\n      margin: 0 0 7px 0;\n    }\n    </style>\n    <script>\n        function menu(x){\n            let tabs = ['status', 'network', 'security'];\n            tabs.forEach(function(x){\n                document.getElementById(x).style.display = 'none';\n                document.getElementById(x+'-link').classList.remove(\"active\");\n            });\n            document.getElementById(x).style.display = '';\n            document.getElementById(x+'-link').classList.add(\"active\");\n        }\n\n        window.onload = function(){\n            fetch('/config.json').then((x) => x.json()).then((conf) => {\n                for (let id in conf){\n                    if (id.startsWith('static')){\n                        document.getElementById(id).innerHTML += ' <code>' + conf[id] + '</code>';\n                    }\n                    else if (id != 'mode')\n                        document.getElementById(id).value = conf[id];\n                }\n                if (conf.mode === 'acc'){\n                    document.getElementById('wifitype').selectedIndex = 1;\n                    document.getElementById('wifimode').innerHTML += ' <code>Access Point</code>';\n                }\n                else{\n                    document.getElementById('wifitype').selectedIndex = 0;\n                    document.getElementById('wifimode').innerHTML += ' <code>Station</code>';\n                }\n            });\n            menu('status');\n        };\n    </script>\n</head>\n<body>\n\n<div class=\"menu\">\n  <ul>\n    <li><a class=\"active\" id=\"status-link\" onclick=\"menu('status');\">Status</a></li>\n    <li><a id=\"network-link\" onclick=\"menu('network');\">Network</a></li>\n    <li><a id=\"security-link\" onclick=\"menu('security');\">Security</a></li>\n    <li style=\"float:right\"><a href=\"#about\">RapidAccess Control Panel</a></li>\n  </ul>\n</div>\n<br>\n<div id=\"status\" class=\"status-box\" style=\"height:200px; width:300px\">\n  <b>Network Status</b>\n  <hr color=\"black\">\n  <ul>\n  <li id=\"staticDeviceIp\">Device IP:</li>\n  <li id=\"wifimode\">Wireless Mode:</li>\n  <li id=\"staticUsbStatus\">USB Connection:</li>\n  <li id=\"staticWirelessClient\">Wireless SSH Client:</li>\n  </ul>\n</div>\n\n<div id=\"network\" class=\"status-box\" style=\"height:400px; width:300px\">\n    <b>Wireless Network Configuration</b>\n    <hr color=\"black\">\n    <form action=\"/networkUpdate\" method=\"get\">\n        <label for=\"wifitype\">Wireless Mode</label>\n        <select id=\"wifitype\" name=\"wifitype\">\n          <option value=\"sta\">Station (connect to existing network)</option>\n          <option value=\"acc\">AP (broadcast own network)</option>\n        </select>\n        <label for=\"wifiname\">Wireless Network Name:</label><br>\n        <input type=\"text\" id=\"wifiname\" name=\"wifiname\"><br>\n        <label for=\"wifipass\">Wireless Network Key:</label><br>\n        <input type=\"text\" id=\"wifipass\" name=\"wifipass\"><br>\n        <label for=\"hostname\">mDns Hostname:</label><br>\n        <input type=\"text\" id=\"hostname\" name=\"hostname\"><br>\n        <input type=\"submit\" value=\"Update Network\">\n    </form>\n</div>\n\n<div id=\"security\" class=\"status-box\" style=\"height:250px; width:250px\">\n  <b>Security/Login Configuration</b>\n  <hr color=\"black\">\n  <form action=\"/networkUpdate\" method=\"get\">\n    <label for=\"username\">Admin Panel Username:</label><br>\n    <input type=\"text\" id=\"username\" name=\"username\" value=\"admin\" disabled=\"true\"><br>\n    <label for=\"adminpass\">Admin Panel Password:</label><br>\n    <input type=\"text\" id=\"adminpass\" name=\"adminpass\"><br>\n    <input type=\"submit\" value=\"Update Settings\">\n  </form>\n</div>\n</body>\n</html>\n");
+f.close();
+    Serial.println("done");
+  }
+}
